@@ -10,6 +10,7 @@ public class Arrive: SteeringBehaviour
     public float slowingDistance = 15.0f;
 
     public GameObject targetGameObject = null;
+
         
     public override Vector3 Calculate()
     {
