@@ -157,10 +157,10 @@ MonoBehaviour:
   acceleration: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
   mass: 1
-  damping: 0.5
+  damping: 1.2
   banking: 0.1
-  maxSpeed: 5
-  maxForce: 10
+  maxSpeed: 7
+  maxForce: 15
 --- !u!114 &2189940286641994189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +191,7 @@ MonoBehaviour:
   myBase: {fileID: 0}
   stoppingDistance: 20
   tiberium: 0
+  lrPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &737066208390008867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,7 +258,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.5
         inSlope: 0
         outSlope: 0
         tangentMode: 0
