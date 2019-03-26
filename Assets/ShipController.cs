@@ -131,6 +131,8 @@ public class RetractHose : State
     {
         owner.GetComponent<LineRenderer>().enabled = false;
         owner.GetComponent<ShipController>().StopCoroutine("LerpLrBack");
+        owner.GetComponent<ShipController>().ChangeTargetBase();
+
     }
 }
 
@@ -203,5 +205,9 @@ public class ShipController : MonoBehaviour
             lrPoint = Vector3.Lerp(lrPoint, transform.position, Time.deltaTime);
             yield return new WaitForEndOfFrame();
         }
+    }
+
+    public void ChangeTargetBase(){
+        targetBase = myBase.GetComponent<Base>().otherBases[Random.Range(0, 3)];
     }
 }
