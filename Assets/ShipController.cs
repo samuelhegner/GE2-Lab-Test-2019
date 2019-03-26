@@ -55,7 +55,7 @@ public class ReturnToBase : State{
     public override void Think()
     {
         float distance = Vector3.Distance(owner.transform.position, owner.GetComponent<Arrive>().targetGameObject.transform.position);
-        if (distance <= 1f)
+        if (distance <= 10f)
         {
             owner.GetComponent<StateMachine>().ChangeState(new RefuelShip());
         }
@@ -103,10 +103,14 @@ public class ShipController : MonoBehaviour
 
     public int tiberium;
 
+    LineRenderer lr;
+
+
     // Start is called before the first frame update
     void Start()
     {
         GetComponent<StateMachine>().ChangeState(new ArriveAtBase());
+        lr = GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame

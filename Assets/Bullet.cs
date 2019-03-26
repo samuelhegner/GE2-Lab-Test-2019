@@ -26,10 +26,9 @@ public class Bullet : MonoBehaviour
         GetComponent<Renderer>().material.color = col;
     }
 
-    void OnCollisionEnter(Collision other)
+    void OnTriggerEnter(Collider other)
     {
         other.transform.GetComponent<Base>().tiberium -= 0.5f;
         Destroy(this.gameObject);
-
     }
 }
