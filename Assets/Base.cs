@@ -19,11 +19,19 @@ public class Base : MonoBehaviour
         {
             r.material.color = Color.HSVToRGB(Random.Range(0.0f, 1.0f), 1, 1);
         }
+        StartCoroutine(MineTiberium());
     }
 
     // Update is called once per frame
     void Update()
     {
         text.text = "" + tiberium;
+    }
+
+    IEnumerator MineTiberium(){
+        while(true){
+            yield return new WaitForSeconds(1f);
+            tiberium += 1;
+        }
     }
 }
