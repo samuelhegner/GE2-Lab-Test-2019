@@ -56,7 +56,7 @@ public class Base : MonoBehaviour
 
     void SpawnShip(){
         GameObject newShip = Instantiate(fighterPrefab, transform.position, Quaternion.identity);
-        newShip.GetComponent<ShipController>().ShipSetup(colToAssign, otherBases[Random.Range(0, 3)], 7);
+        newShip.GetComponent<ShipController>().ShipSetup(colToAssign, otherBases[Random.Range(0, 3)], 7, gameObject);
         tiberium -= 10;
     }
 

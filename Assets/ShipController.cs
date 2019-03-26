@@ -27,17 +27,14 @@ public class ArriveAtBase: State{
 public class ShootAtBase : State{
     public override void Enter()
     {
-        owner.GetComponent<Arrive>().enabled = true;
-        owner.GetComponent<Arrive>().targetGameObject = owner.gameObject;
         owner.GetComponent<ShipController>().StartCoroutine("ShootAtBase");
-
     }
 
     public override void Think()
     {
 
         if(owner.GetComponent<ShipController>().tiberium == 0){
-            owner.GetComponent<StateMachine>().ChangeState(new ShootAtBase());
+            owner.GetComponent<StateMachine>().ChangeState(new ReturnToBase());
         }
     }
 
@@ -45,7 +42,50 @@ public class ShootAtBase : State{
     {
         owner.GetComponent<ShipController>().StopCoroutine("ShootAtBase");
 
+    }
+}
+
+public class ReturnToBase : State{
+    public override void Enter()
+    {
+        owner.GetComponent<Arrive>().enabled = true;
+        owner.GetComponent<Arrive>().targetGameObject = owner.GetComponent<ShipController>().myBase;
+    }
+
+    public override void Think()
+    {
+        float distance = Vector3.Distance(owner.transform.position, owner.GetComponent<Arrive>().targetGameObject.transform.position);
+        if (distance <= 1f)
+        {
+            owner.GetComponent<StateMachine>().ChangeState(new RefuelShip());
+        }
+    }
+
+    public override void Exit()
+    {
         owner.GetComponent<Arrive>().enabled = false;
+    }
+
+}
+
+public class RefuelShip : State{
+    public override void Enter()
+    {
+
+    }
+
+    public override void Think()
+    {
+        if(owner.GetComponent<ShipController>().myBase.GetComponent<Base>().tiberium >= 7){
+            owner.GetComponent<ShipController>().myBase.GetComponent<Base>().tiberium -= 7;
+            owner.GetComponent<ShipController>().tiberium += 7;
+            owner.GetComponent<StateMachine>().ChangeState(new ArriveAtBase());
+        }
+    }
+
+    public override void Exit()
+    {
+       
     }
 }
 
@@ -55,6 +95,8 @@ public class ShipController : MonoBehaviour
     public GameObject bullet;
 
     public GameObject targetBase;
+
+    public GameObject myBase;
 
     public float stoppingDistance;
 
@@ -73,7 +115,7 @@ public class ShipController : MonoBehaviour
 
     }
 
-    public void ShipSetup(Color col, GameObject target, int numberOfTiberium){
+    public void ShipSetup(Color col, GameObject target, int numberOfTiberium, GameObject home){
         foreach (Renderer r in GetComponentsInChildren<Renderer>())
         {
             r.material.color = col;
@@ -82,6 +124,7 @@ public class ShipController : MonoBehaviour
         targetBase = target;
 
         tiberium += numberOfTiberium;
+        myBase = home;
     }
 
     public IEnumerator ShootAtBase(){
