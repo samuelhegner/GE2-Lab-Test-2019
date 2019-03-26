@@ -55,9 +55,9 @@ public class ReturnToBase : State{
     public override void Think()
     {
         float distance = Vector3.Distance(owner.transform.position, owner.GetComponent<Arrive>().targetGameObject.transform.position);
-        if (distance <= 10f)
+        if (distance <= 15f)
         {
-            owner.GetComponent<StateMachine>().ChangeState(new RefuelShip());
+            owner.GetComponent<StateMachine>().ChangeState(new ExtendHose());
         }
     }
 
@@ -76,16 +76,61 @@ public class RefuelShip : State{
 
     public override void Think()
     {
+
         if(owner.GetComponent<ShipController>().myBase.GetComponent<Base>().tiberium >= 7){
             owner.GetComponent<ShipController>().myBase.GetComponent<Base>().tiberium -= 7;
             owner.GetComponent<ShipController>().tiberium += 7;
-            owner.GetComponent<StateMachine>().ChangeState(new ArriveAtBase());
+            owner.GetComponent<StateMachine>().ChangeState(new RetractHose());
         }
     }
 
     public override void Exit()
     {
        
+    }
+}
+
+public class ExtendHose : State{
+    public override void Enter()
+    {
+        owner.GetComponent<ShipController>().lrPoint = owner.transform.position;
+        owner.GetComponent<ShipController>().StartCoroutine("LerpLrTo");
+
+        owner.GetComponent<LineRenderer>().enabled = true;
+        owner.GetComponent<LineRenderer>().startColor = owner.transform.GetChild(0).GetComponent<Renderer>().material.color;
+        owner.GetComponent<LineRenderer>().endColor = owner.transform.GetChild(0).GetComponent<Renderer>().material.color;
+    }
+
+    public override void Think()
+    {
+        if(Vector3.Distance(owner.GetComponent<ShipController>().lrPoint, owner.GetComponent<ShipController>().myBase.transform.position) < 0.5f){
+            owner.GetComponent<StateMachine>().ChangeState(new RefuelShip());
+        }
+    }
+    public override void Exit()
+    {
+        owner.GetComponent<ShipController>().StopCoroutine("LerpLrTo");
+    }
+}
+
+public class RetractHose : State
+{
+    public override void Enter()
+    {
+        owner.GetComponent<ShipController>().StartCoroutine("LerpLrBack");
+    }
+
+    public override void Think()
+    {
+        if (Vector3.Distance(owner.GetComponent<ShipController>().lrPoint, owner.transform.position) < 0.5f)
+        {
+            owner.GetComponent<StateMachine>().ChangeState(new ArriveAtBase());
+        }
+    }
+    public override void Exit()
+    {
+        owner.GetComponent<LineRenderer>().enabled = false;
+        owner.GetComponent<ShipController>().StopCoroutine("LerpLrBack");
     }
 }
 
@@ -105,6 +150,8 @@ public class ShipController : MonoBehaviour
 
     LineRenderer lr;
 
+    public Vector3 lrPoint;
+
 
     // Start is called before the first frame update
     void Start()
@@ -116,7 +163,7 @@ public class ShipController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        lr.SetPositions(new Vector3[] { transform.position, lrPoint });
     }
 
     public void ShipSetup(Color col, GameObject target, int numberOfTiberium, GameObject home){
@@ -139,6 +186,22 @@ public class ShipController : MonoBehaviour
                 newBullet.SendMessage("SetColour", GetComponent<Renderer>().material.color);
                 tiberium--;
             }
+        }
+    }
+
+    public IEnumerator LerpLrTo(){
+        while (true){
+            lrPoint = Vector3.Lerp(lrPoint, myBase.transform.position, Time.deltaTime);
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public IEnumerator LerpLrBack()
+    {
+        while (true)
+        {
+            lrPoint = Vector3.Lerp(lrPoint, transform.position, Time.deltaTime);
+            yield return new WaitForEndOfFrame();
         }
     }
 }
